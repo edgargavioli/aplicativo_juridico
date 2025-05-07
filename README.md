@@ -1,6 +1,6 @@
 # Assistente Jurídico
 
-**Autor:** [Seu Nome Aqui]
+**Autor:** Edgar Ribeiro Gavioli.
 
 ## Descrição do App
 
@@ -29,4 +29,16 @@ O **Assistente Jurídico** é um aplicativo Flutter que utiliza inteligência ar
    ```bash
    git clone <https://github.com/edgargavioli/aplicativo_juridico>
    cd aplicativo_juridico
+
+# O que é LLM
+
+Este projeto utiliza uma **Large Language Model (LLM)** da **Google Generative AI**, baseada em arquiteturas avançadas de redes neurais do tipo **transformer**. O modelo foi treinado com grandes volumes de texto e é capaz de compreender e gerar linguagem natural com alta precisão.
+
+* A LLM é treinada para **prever a próxima palavra** em uma sequência, com base no contexto anterior.
+* O texto de entrada é convertido em **tokens** (fragmentos de palavras) e processado como vetores numéricos.
+* Através de bilhões de exemplos e ajustes finos, o modelo aprende padrões complexos de linguagem, lógica e conhecimento do mundo.
+* Ao receber uma entrada, ele gera uma resposta escolhendo a sequência mais **provável e coerente** com base no que aprendeu.
+
+> Essa abordagem permite que o modelo entenda perguntas, elabore respostas contextuais, gere textos criativos e até auxilie em tarefas de programação e análise.
+
    
