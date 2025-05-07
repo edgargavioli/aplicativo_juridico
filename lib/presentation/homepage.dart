@@ -63,18 +63,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _startListening() async {
-    await _speech.listen(onResult: _onSpeechResult, localeId: 'pt-BR');
-    setState(() {});
+    if (!_speech.isListening) {
+      await _speech.listen(onResult: _onSpeechResult, localeId: 'pt-BR');
+      setState(() {});
+    } else {
+      print("O reconhecimento de fala já está ativo.");
+    }
   }
 
   void _stopListening() async {
-    await _speech.stop();
-    setState(() {
-      _controller.text = _text;
-      _controller.selection = TextSelection.fromPosition(
-        TextPosition(offset: _controller.text.length),
-      );
-    });
+    if (_speech.isListening) {
+      await _speech.stop();
+      setState(() {
+        _controller.text = _text;
+        _controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: _controller.text.length),
+        );
+      });
+    } else {
+      print("O reconhecimento de fala já está parado.");
+    }
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
