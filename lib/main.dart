@@ -1,4 +1,3 @@
-import 'package:assistente_juridico/presentation/archiveexplication.dart';
 import 'package:assistente_juridico/presentation/homepage.dart';
 import 'package:flutter/material.dart';
 import 'util.dart';
@@ -13,7 +12,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
     TextTheme textTheme = createTextTheme(
       context,
       "Merriweather",
@@ -24,12 +22,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Assistente Juridico',
       debugShowCheckedModeBanner: false,
-      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+      theme: theme.dark(),
       initialRoute: '/',
-      routes: {
-        '/': (context) => const HomePage(),
-        '/scan': (context) => ArchiveExplicationScreen(),
-      },
+      routes: {'/': (context) => const HomePage()},
     );
   }
 }

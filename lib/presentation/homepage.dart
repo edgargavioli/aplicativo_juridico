@@ -2,6 +2,9 @@ import 'package:assistente_juridico/service/getGeminiMessage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,14 +18,76 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _controller = TextEditingController();
   final types.User _user = types.User(id: 'user');
   final types.User _bot = types.User(id: 'bot');
+  final SpeechToText _speech = SpeechToText();
+  final FlutterTts _flutterTts = FlutterTts();
+  bool _isSpeaking = false;
+  String _text = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _initSpeech();
+    _initTts();
+  }
+
+  void _initSpeech() async {
+    await _speech.initialize();
+    setState(() {});
+  }
+
+  void _initTts() {
+    _flutterTts.setLanguage("pt-BR");
+    _flutterTts.setSpeechRate(1.5);
+    _flutterTts.setPitch(1.0);
+  }
+
+  void _readMessage(String text) async {
+    setState(() {
+      _isSpeaking = true;
+    });
+
+    await _flutterTts.speak(text);
+
+    _flutterTts.setCompletionHandler(() {
+      setState(() {
+        _isSpeaking = false;
+      });
+    });
+  }
+
+  void _stopTts() async {
+    await _flutterTts.stop();
+    setState(() {
+      _isSpeaking = false;
+    });
+  }
+
+  void _startListening() async {
+    await _speech.listen(onResult: _onSpeechResult, localeId: 'pt-BR');
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speech.stop();
+    setState(() {
+      _controller.text = _text;
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length),
+      );
+    });
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _text = result.recognizedWords;
+    });
+  }
 
   void _sendMessage(String text) async {
     setState(() {
       _messages.add(
         types.TextMessage(
-          id:
-              DateTime.now().millisecondsSinceEpoch.toString() +
-              (1000 + (1000 * (1 + _messages.length))).toString(),
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
           author: _user,
           createdAt: DateTime.now().millisecondsSinceEpoch,
           text: text,
@@ -35,9 +100,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _messages.add(
         types.TextMessage(
-          id:
-              DateTime.now().millisecondsSinceEpoch.toString() +
-              (1000 + (1000 * (1 + _messages.length))).toString(),
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
           author: _bot,
           createdAt: DateTime.now().millisecondsSinceEpoch,
           text: botResponse ?? 'Erro ao obter resposta',
@@ -53,69 +116,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Builder(
-          builder:
-              (context) => Icon(
-                Icons.menu_book,
-                size: 30,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-        ),
-        leading: Builder(
-          builder:
-              (context) => IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Assistente Juridico',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Versão 1.0.0',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pushNamed(context, '/');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.document_scanner),
-              title: const Text('Escanear Documento'),
-              onTap: () {
-                Navigator.pushNamed(context, '/scan');
-              },
-            ),
-          ],
-        ),
+        title: const Text("Assistente Jurídico"),
       ),
       body: Column(
         children: [
@@ -141,12 +142,39 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               messages: _messages.reversed.toList(),
+              onMessageTap: (context, message) {
+                if (message is types.TextMessage) {
+                  _readMessage(message.text);
+                }
+              },
               onSendPressed: (message) => {_sendMessage(message.text)},
               user: _user,
-              inputOptions: InputOptions(textEditingController: _controller),
+              inputOptions: InputOptions(
+                textEditingController: _controller,
+                sendButtonVisibilityMode: SendButtonVisibilityMode.always,
+              ),
             ),
           ),
         ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80.0),
+        child:
+            _isSpeaking
+                ? FloatingActionButton(
+                  onPressed: _stopTts,
+                  tooltip: 'Parar fala',
+                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                  child: const Icon(Icons.stop),
+                )
+                : FloatingActionButton(
+                  onPressed:
+                      _speech.isNotListening ? _startListening : _stopListening,
+                  tooltip: 'Pressione para falar',
+                  child: Icon(
+                    _speech.isNotListening ? Icons.mic_off : Icons.mic,
+                  ),
+                ),
       ),
     );
   }

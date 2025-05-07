@@ -1,16 +1,32 @@
-# assistente_juridico
+# Assistente Jurídico
 
-A new Flutter project.
+**Autor:** [Seu Nome Aqui]
 
-## Getting Started
+## Descrição do App
 
-This project is a starting point for a Flutter application.
+O **Assistente Jurídico** é um aplicativo Flutter que utiliza inteligência artificial para responder perguntas relacionadas ao direito civil. Ele foi projetado para ajudar usuários leigos a entenderem termos jurídicos de forma clara e objetiva, evitando jargões e fornecendo informações úteis.
 
-A few resources to get you started if this is your first Flutter project:
+## Imagens do App
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Aplicativo Rodando
+![Aplicativo Rodando](assets/screenshots/gifproreadme.gif)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Tecnologias Utilizadas
+
+- **Flutter**: Framework para desenvolvimento multiplataforma.
+- **Google Generative AI**: Modelo de linguagem utilizado para gerar respostas.
+- **flutter_dotenv**: Gerenciamento de variáveis de ambiente.
+- **speech_to_text**: Reconhecimento de voz para entrada de comandos.
+- **flutter_tts**: Conversão de texto em fala.
+
+## Instruções de Instalação e Execução
+
+1. **Pré-requisitos**:
+   - Flutter instalado ([guia de instalação](https://docs.flutter.dev/get-started/install)).
+   - Chave de API do Google Generative AI.
+
+2. **Clone o repositório**:
+   ```bash
+   git clone <https://github.com/edgargavioli/aplicativo_juridico>
+   cd aplicativo_juridico
+   
